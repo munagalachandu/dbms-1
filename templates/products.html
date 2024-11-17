@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html>
+<body>
+    <table>
+        <thead>
+            <tr>
+                <th>ID</th>
+                <th>Name</th>
+                <th>Description</th>
+                <th>Price</th>
+                <th>Edit</th>
+                
+            
+            </tr>
+        </thead>
+        <tbody>
+            {% for product in products %}
+                <tr>
+                    <td>{{ product[0] }}</td>
+                    <td>{{ product[1] }}</td>
+                    <td>{{ product[2] }}</td>
+                    <td>{{ product[3] }}</td>
+                    <td><p>  <a href="{{url_for('editproduct',pid=product[0])}}"> Edit</a>
+                      <a href="{{url_for('deleteproduct',pid=product[0])}}"> Delete</a></p></td>
+                    
+                </tr>
+            {% endfor %}
+        </tbody>
+        <p>  <a href="{{url_for('addproduct')}}">Add product </a></p>
+
+
+    </table>
+
+
+
+
+</body>
+</html>
