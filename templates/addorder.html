@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<html>
+    <body>
+
+    <h2>Add Order</h2>
+    <div class="msg">{{ msg }}</div>
+
+<form method="POST" action="/create_order">
+    <label for="oid">Order ID:</label>
+    <input type="number" id="oid" name="oid" required><br><br>
+
+    <label for="cname">Customer Name:</label>
+    <input type="text" id="cname" name="cname" required><br><br>
+
+    <label for="cemail">Customer Email:</label>
+    <input type="email" id="cemail" name="cemail" required><br><br>
+
+    <label for="odate">Order Date:</label>
+    <input type="date" id="odate" name="odate" required><br><br>
+
+    <label for="status">Order Status:</label>
+    <select id="status" name="status" required>
+        <option value="confirmed">Confirmed</option>
+        <option value="shipped">Shipped</option>
+        <option value="delivered">Delivered</option>
+    </select><br><br>
+
+    <label>Products:</label><br>
+    {% for product in products %}
+        <input type="checkbox" name="pids" value="{{ product.pid }}"> {{ product.pname }} - ${{ product.pprice }}<br>
+    {% endfor %}
+    <br><br>
+
+    <input type="submit" value="Create Order">
+</form>
+</body>
+</html>

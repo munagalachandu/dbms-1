@@ -8,21 +8,21 @@
 </head>
 <body>
     <div class="container">
-        <h1>Add New Product</h1>
+        <h1>Edit Product</h1>
 
         <div class="msg">{{ msg }}</div>
 
-        <form action="{{ url_for('addproduct') }}" method="POST">
-            <label for="id">Product ID:</label>
-            <input type="number" id="pid" name="pid" placeholder="Enter product id" required><br>
+        <form action="{{ url_for('editproduct',pid=product['pid']) }}" method="POST">
+
+            <h6>Product ID : {{product['pid']}}</h6>
             <label for="name">Product Name:</label>
-            <input type="text" id="name" name="pname" placeholder="Enter product name" required><br>
+            <input type="text" id="name" name="pname" placeholde="{{product['pname']}}" required><br>
 
             <label for="description">Description:</label>
-            <textarea id="description" name="pdesc" placeholder="Enter product description" required></textarea><br>
+            <textarea id="description" name="pdesc" placeholder="{{product['pdesc']}}" required></textarea><br>
 
             <label for="price">Price:</label>
-            <input type="number" id="price" name="pprice" placeholder="Enter price of product" required><br>
+            <input type="number" id="price" name="pprice" placeholder="{{product['pprice']}}" required><br>
 
             <input type="submit" class="btn" value="Add Product"><br>
         </form>
