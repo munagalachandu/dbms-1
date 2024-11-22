@@ -5,7 +5,6 @@ import re
  
 app=Flask(__name__)
 app.secret_key='key1123'
-
 app.config['MYSQL_HOST']='localhost'
 app.config['MYSQL_USER']='root'
 app.config['MYSQL_PASSWORD']='chandu123'
@@ -61,8 +60,6 @@ def create_orders_table():
         mysql.connection.commit()
         cursor.close()
 
-with app.app_context():
-    create_orders_table()
 
 
 def create_cust_orders_table():
@@ -71,25 +68,27 @@ def create_cust_orders_table():
             CREATE TABLE IF NOT EXISTS cust_orders (
         id INT, 
         FOREIGN KEY(id) REFERENCES signup(id) ON UPDATE CASCADE ON DELETE CASCADE,
-        oid INT PRIMARY KEY,
-        pid INT PRIMARY KEY,
+        oid INT,
+        pid INT,
+        PRIMARY KEY(pid,oid),            
         FOREIGN KEY(oid) REFERENCES orders(oid) ON UPDATE CASCADE ON DELETE CASCADE,
         FOREIGN KEY(pid) REFERENCES products(pid) ON UPDATE CASCADE ON DELETE CASCADE,                                                                           
-        p_qty INTNOT NULL
+        p_qty INT NOT NULL
         )
 
         ''')
         mysql.connection.commit()
         cursor.close()
-with app.app_context():
-    create_cust_orders_table()
 
-with app.app_context():
-    create_orders_table()            
-
-
+        
 with app.app_context():
     create_signup_table()
+with app.app_context():
+        create_products_table()    
+with app.app_context():
+    create_orders_table()
+with app.app_context():
+    create_cust_orders_table()        
 
 @app.route('/')
 @app.route('/login',methods=['GET','POST'])
@@ -151,8 +150,7 @@ def index():
 
 @app.route('/products',methods=['GET','POST'])
 def products():
-    with app.app_context():
-        create_products_table()
+    
     
     cursor=mysql.connection.cursor(MySQLdb.cursors.DictCursor)
     cursor.execute("SELECT pid, pname, pdesc, pprice FROM products where id=(%s)",(session['id'],))
@@ -219,61 +217,54 @@ def deleteproduct(pid):
     mysql.connection.commit()
     return redirect(url_for('products'))
 
-@app.route('/orders',methods=['GET','POST'])
+@app.route('/orders', methods=['GET', 'POST'])
 def orders():
-    cursor=mysql.connection.cursor(MySQLdb.cursors.DictCursor)
-    cursor.execute('''SELECT o.oid,o.cname, 
-                   SUM(p.pprice*co.p_qty) AS total_price
-                   FROM orders o
-                   JOIN cust_orders co ON o.oid=co.oid
-                   JOIN products p ON p.pid=co.pid
-                   WHERE o.id=%s and o.oid=%s 
-                   GROUP BY o.oid, o.cname;
-                   ''')
-    orders = cursor.fetchall()
-    return render_template('orders.html', orders=orders)    
+    cursor = mysql.connection.cursor(MySQLdb.cursors.DictCursor)
 
-@app.route('/addorder',methods=['GET','POST'])
+    cursor.execute('''
+        SELECT o.oid, o.cname, o.cemail, o.odate, o.status, co.p_qty, p.pname
+        FROM  orders o
+        JOIN cust_orders co ON o.oid = co.oid
+        JOIN products p ON co.pid = p.pid
+        WHERE o.id = %s
+        ORDER BY o.oid, p.pname;
+    ''', (session['id'],))
+
+    orders_data = cursor.fetchall()
+
+    return render_template('orders.html', orders_data=orders_data)
+   
+
+@app.route('/addorder', methods=['GET', 'POST'])
 def addorder():
-    msg=''
-    cursor=mysql.connection.cursor(MySQLdb.cursors.DictCursor)
-    if request.method=='POST' and  'oid'in request.form and 'cname' in request.form  and 'cemail' in request.form and 'odate' in request.form and 'status' in request.form and 'pids' in request.form:
-        oid=request.form ['oid']
-        cname=request.form['cname']
-        odate=request.form['odate']
-        cemail=request.form['cemail']
+    msg = ''
+    cursor = mysql.connection.cursor(MySQLdb.cursors.DictCursor)
+    if request.method == 'POST' and 'oid' in request.form and 'cname' in request.form and 'cemail' in request.form and 'odate' in request.form and 'status' in request.form and 'pids' in request.form:
+        oid = request.form['oid']
+        cname = request.form['cname']
+        odate = request.form['odate']
+        cemail = request.form['cemail']
         pids = request.form.getlist('pids')
-        status=request.form['status']
-        
-        cursor=mysql.connection.cursor(MySQLdb.cursors.DictCursor)
+        status = request.form['status']
+
         try:
-            
-            cursor = mysql.connection.cursor()
-            cursor.execute('''
-                INSERT INTO orders (oid, cname, cemail, odate, status)
-                VALUES (%s, %s, %s, %s, %s)
-            ''', (oid, cname, cemail, odate, status))
+            cursor.execute('''INSERT INTO orders (oid, cname, cemail, odate, status) VALUES (%s, %s, %s, %s, %s)''', (oid, cname, cemail, odate, status))
             mysql.connection.commit()
 
-            
             for pid in pids:
-                cursor.execute('''
-                    INSERT INTO cust_orders (id,oid, pid, p_qty)
-                    VALUES (%s,%s, %s, %s)
-                ''', (session['id'],oid, pid, 1))  
+                cursor.execute('''INSERT INTO cust_orders (id, oid, pid, p_qty) VALUES (%s, %s, %s, %s)''', (session['id'], oid, pid, 1))
             mysql.connection.commit()
 
-            cursor.close()
-            
             return redirect(url_for('orders'))
 
         except Exception as e:
-            
             return redirect(request.url)
-    elif request.method=='POST':
-        msg='Please fill the form'
+ 
+    cursor.execute("SELECT pid, pname, pprice FROM products WHERE id=%s", (session['id'],))
+    products = cursor.fetchall()
 
-    return render_template('addorder.html',msg=msg)   
+    return render_template('addorder.html', msg=msg, products=products)
+ 
 
 @app.route('/editorder/<int:oid>',methods=['GET','POST'])
 def editorder(oid):
@@ -313,16 +304,16 @@ def editorder(oid):
     elif request.method=='POST':
         msg='Please fill the form'
 
+
     return render_template('editorder.html',msg=msg)  
+
+@app.route('/deleteorder/<int:oid>',methods=['GET','POST'])
+def deleteorder(oid):
+    cursor=mysql.connection.cursor(MySQLdb.cursors.DictCursor)
+    cursor.execute('DELETE FROM orders WHERE oid=%s AND id=%s',(oid,session['id']))
+    mysql.connection.commit()
+    return redirect(url_for('orders'))
     
-
-
-
-    
-           
-           
-
-
 
     
 if __name__ == '__main__':
