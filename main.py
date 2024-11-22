@@ -248,7 +248,7 @@ def addorder():
         status = request.form['status']
 
         try:
-            cursor.execute('''INSERT INTO orders (oid, cname, cemail, odate, status) VALUES (%s, %s, %s, %s, %s)''', (oid, cname, cemail, odate, status))
+            cursor.execute('''INSERT INTO orders (id,oid, cname, cemail, odate, status) VALUES (%s,%s, %s, %s, %s, %s)''', (session['id'],oid, cname, cemail, odate, status))
             mysql.connection.commit()
 
             for pid in pids:

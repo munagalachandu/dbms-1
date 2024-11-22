@@ -1,8 +1,14 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Your Orders</title>
 </head>
 <body>
     <h1>Your Orders</h1>
 
-    <table>
+    <table border="1">
         <thead>
             <tr>
                 <th>Order ID</th>
@@ -16,21 +22,30 @@
             </tr>
         </thead>
         <tbody>
-            {% for order in orders_data %}
+            {% if orders_data %}
+                {% for order in orders_data %}
+                    <tr>
+                        <td>{{ order['oid'] }}</td>
+                        <td>{{ order['cname'] }}</td>
+                        <td>{{ order['cemail'] }}</td>
+                        <td>{{ order['odate'] }}</td>
+                        <td>{{ order['status'] }}</td>
+                        <td>{{ order['pname'] }}</td>
+                        <td>{{ order['p_qty'] }}</td>
+                        <td>
+                            <a href="{{ url_for('editorder', oid=order['oid']) }}">Edit</a> |
+                            <a href="{{ url_for('deleteorder', oid=order['oid']) }}">Delete</a>
+                        </td>
+                    </tr>
+                {% endfor %}
+            {% else %}
                 <tr>
-                    <td>{{ order['oid'] }}</td>
-                    <td>{{ order['cname'] }}</td>
-                    <td>{{ order['cemail'] }}</td>
-                    <td>{{ order['odate'] }}</td>
-                    <td>{{ order['status'] }}</td>
-                    <td>{{ order['pname'] }}</td>
-                    <td>{{ order['p_qty'] }}</td>
-                    <td><p>  <a href="{{url_for('editorder',oid=order.oid)}}"> Edit</a>
-                        <a href="{{url_for('deleteorder',oid=order.oid)}}"> Delete</a></p></td>
+                    <td colspan="8" style="text-align:center;">No orders found.</td>
                 </tr>
-            {% endfor %}
+            {% endif %}
         </tbody>
     </table>
-    <p>  <a href="{{url_for('addorder')}}">Add order </a></p>
+
+    <p><a href="{{ url_for('addorder') }}">Add Order</a></p>
 </body>
 </html>
