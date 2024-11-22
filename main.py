@@ -148,6 +148,19 @@ def signup():
 def index():
     return render_template('index.html')
 
+
+@app.route('/profile',methods=['GET','POST'])
+def profile():
+    cursor=mysql.connection.cursor(MySQLdb.cursors.DictCursor)
+    cursor.execute('''select s.storename, count(o.oid) as o_c, count(p.pid) as p_c 
+                   from signup s
+                    join orders o on s.id=o.id 
+                   join products p on p.id=s.id 
+                   where s.id=(%s)
+                   group by s.storename''',(session['id'],))
+    store=cursor.fetchone()
+    return render_template('profile.html',store=store)
+
 @app.route('/products',methods=['GET','POST'])
 def products():
     
