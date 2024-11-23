@@ -1,0 +1,171 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Edit Order</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+    <style>
+        .msg{
+              font-family: 'Georgia', serif;
+              color: red;
+              text-align: center;
+              font-size: 25px;
+              text-shadow: 1px 1px 2px red;
+    }
+        body{
+                background-color:  #272829;
+            }
+            h1 {
+                  font-family: 'Oswald', sans-serif;
+                  font-weight: bold;
+                  color: #5faded;
+                  text-align: center;
+                  font-size: 30px;
+                  text-shadow: 1px 1px 2px rgb(97, 190, 233);
+                }
+            .navbar {
+        position: fixed; 
+        left: 0; 
+        top: 0;
+        background-color: black;
+        color: #30D5C8;
+        height: 100%; 
+        width: 200px;
+    }
+    .navbar-title{
+            font-family: 'Oswald', sans-serif;
+            padding: 15px 20px;
+            color: white;
+            text-decoration: none;
+            font-size: 30px;
+            display:block;
+            text-shadow: 1px 1px 2px rgb(97, 190, 233);
+    }
+    .nav-links{
+        font-family: 'Georgia', serif;
+        font-size: 20px;
+        color: #07aaf5;
+        text-align: left;
+        vertical-align: middle;
+    }
+    form{
+                  font-family: 'Georgia', serif;
+                  display: block;
+                  justify-content: center; 
+                  align-items: center; 
+                }
+                input{
+                  font-family: 'Georgia', serif;
+                  color: white;
+                  background-color: #111212;
+                  text-align: center;
+                  border:  2px solid white;
+                  border-radius: 5px;
+                  width: 250px;
+                  height: 50px;
+                  display: block;
+                  margin-left: 630px;
+                }
+                textarea{
+                  font-family: 'Georgia', serif;
+                  color: white;
+                  background-color: #111212;
+                  text-align: center;
+                  border:  2px solid white;
+                  border-radius: 5px;
+                  width: 250px;
+                  height: 50px;
+                  display: block;
+                  margin-left: 630px; 
+                }
+                label{
+                  font-family: 'Georgia', serif;
+                  color: white;
+                  text-align: center;
+                  font-size: 30px;
+                  margin-left: 630px;
+                  margin-top: 50px;
+                }
+                select{
+        width: 200px;
+        padding: 10px; 
+        font-size: 20px; 
+        border: 1px solid white;
+        border-radius: 5px; 
+        background-color:#0a0909; 
+        color: white; 
+        appearance: none; 
+        text-align: center;
+        align-items: center;
+        justify-content: center; 
+        display: flex;
+        margin-left: 650px;
+        margin-bottom: 20px;
+        margin-top: 10px;
+        font-family: 'Georgia',serif;
+                }
+                .btn{
+                  font-family: 'Georgia', serif;
+                  margin-left: 660px;
+                  background-color: #133ae8;
+                  color: white;
+                  width: 200px; 
+                  height: 50px; 
+                  padding: 10px; 
+                  font-size: 20px;
+                  margin-top: 20px;
+                  margin-right: 20px;
+                  text-align: center;
+                }
+                h2{
+    font-family: 'Georgia', serif;
+              color: white;
+              text-align: center;
+              font-size: 30px;
+  }
+        </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Edit Order</h1>
+
+        <div class="msg">{{ msg }}</div>
+        
+        <nav class="navbar">
+            <a href="#" class="navbar-title">OrderLynx</a>
+            <a class="nav-links" href="{{ url_for('profile') }}" alt="profile">Profile</a>
+            <br>
+            <a class="nav-links" href="{{ url_for('products') }}" alt="products">Products</a>
+            <br>
+            <a class="nav-links" href="{{ url_for('orders') }}" alt="orders">Orders</a>
+            <br>
+        </nav>
+
+        <h2>Order ID: {{ order['oid'] }}</h2>
+        <form action="{{ url_for('editorder', oid=order['oid']) }}" method="POST">
+
+            <label for="cname">Customer Name:</label>
+            <input type="text" id="cname" name="cname" placeholder="{{ order['cname'] }}" required><br>
+
+            <label for="cemail">Customer Email:</label>
+            <input type="email" id="cemail" name="cemail" placeholder="{{ order['cemail'] }}" required><br>
+
+            <label for="odate">Order Date:</label>
+            <input type="date" id="odate" name="odate" placeholder="{{ order['odate'] }}" required><br>
+
+            <label for="status">Order Status:</label>
+            <select id="status" name="status" required>
+                <option value="Pending" {% if order['status'] == 'Pending' %}selected{% endif %}>Pending</option>
+                <option value="Completed" {% if order['status'] == 'Completed' %}selected{% endif %}>Completed</option>
+                <option value="Shipped" {% if order['status'] == 'Shipped' %}selected{% endif %}>Shipped</option>
+                <option value="Cancelled" {% if order['status'] == 'Cancelled' %}selected{% endif %}>Cancelled</option>
+            </select><br>
+
+            
+
+            <input type="submit" class="btn" value="Update Order"><br>
+        </form>
+    </div>
+</body>
+</html>
