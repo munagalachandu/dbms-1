@@ -1,6 +1,35 @@
 <!DOCTYPE html>
 <html>
+<head>
+  <style>
+    li{
+      font-family: 'Georgia', serif;
+              color: white;
+              text-align: center;
+              font-size: 30px;
+    }
+    h1 {
+              font-family: 'Oswald', sans-serif;
+              font-weight: bold;
+              color: #5faded;
+              text-align: center;
+              font-size: 30px;
+              text-shadow: 1px 1px 2px rgb(97, 190, 233);
+            }
+    body{
+      background-color:  #272829;
+    }
+    .msg{
+              font-family: 'Georgia', serif;
+              color: red;
+              text-align: center;
+              font-size: 25px;
+              text-shadow: 1px 1px 2px red;
+    }
+  </style>
+</head>
 <body>
+  <h1> Welcome to OrderLynx </h1>
     <div class="msg">{{ msg }}</div>
     <ul>
         <li><a href="{{url_for('profile')}}">Profile</a></li>
