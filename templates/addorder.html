@@ -1,10 +1,123 @@
 <!DOCTYPE html>
 <html>
+<head>
+    <style>
+        body{
+            background-color:  #272829;
+        }
+        h1 {
+              font-family: 'Oswald', sans-serif;
+              font-weight: bold;
+              color: #5faded;
+              text-align: center;
+              font-size: 30px;
+              text-shadow: 1px 1px 2px rgb(97, 190, 233);
+            }
+        .navbar {
+    position: fixed; 
+    left: 0; 
+    top: 0;
+    background-color: black;
+    color: #30D5C8;
+    height: 100%; 
+    width: 200px;
+}
+.navbar-title{
+        font-family: 'Oswald', sans-serif;
+        padding: 15px 20px;
+        color: white;
+        text-decoration: none;
+        font-size: 30px;
+        display:block;
+        text-shadow: 1px 1px 2px rgb(97, 190, 233);
+}
+.nav-links{
+    font-family: 'Georgia', serif;
+    font-size: 20px;
+    color: #07aaf5;
+    text-align: left;
+    vertical-align: middle;
+}
+form{
+              font-family: 'Georgia', serif;
+              display: block;
+              justify-content: center; 
+              align-items: center; 
+            }
+            input{
+              font-family: 'Georgia', serif;
+              color: white;
+              background-color: #111212;
+              text-align: center;
+              border:  2px solid white;
+              border-radius: 5px;
+              width: 250px;
+              height: 50px;
+              display: block;
+              margin-left: 630px;
+            }
+            label{
+              font-family: 'Georgia', serif;
+              color: white;
+              text-align: center;
+              font-size: 30px;
+              margin-left: 630px;
+              margin-top: 50px;
+            }
+            select{
+    width: 200px;
+    padding: 10px; 
+    font-size: 20px; 
+    border: 1px solid white;
+    border-radius: 5px; 
+    background-color:#0a0909; 
+    color: white; 
+    appearance: none; 
+    text-align: center;
+    align-items: center;
+    justify-content: center; 
+    display: flex;
+    margin-left: 650px;
+    margin-bottom: 20px;
+    margin-top: 10px;
+    font-family: 'Georgia',serif;
+            }
+            .btn{
+              font-family: 'Georgia', serif;
+              margin-left: 660px;
+              background-color: #133ae8;
+              color: white;
+              width: 200px; 
+              height: 50px; 
+              padding: 10px; 
+              font-size: 20px;
+              margin-top: 20px;
+              margin-right: 20px;
+              text-align: center;
+            }
+            .msg{
+              font-family: 'Georgia', serif;
+              color: red;
+              text-align: center;
+              font-size: 25px;
+              text-shadow: 1px 1px 2px red;
+    }
+    </style>
+</head>
+<nav class="navbar">
+    <a href="#" class="navbar-title">OrderLynx</a>
+<a class="nav-links" href="{{url_for('profile')}}" alt="profile">Profile</a>
+<br>
+<a class="nav-links"href="{{url_for('products')}}"alt="products">Products</a>
+<br>
+<a class="nav-links"href="{{url_for('orders')}}"alt="orders">Orders</a>
+<br>
+ </nav>
     <body>
 
-    <h2>Add Order</h2>
     <div class="msg">{{ msg }}</div>
-
+    
+     <h1> Add Order </h1>
 <form method="POST" action="/addorder">
     <label for="oid">Order ID:</label>
     <input type="number" id="oid" name="oid" required><br><br>
@@ -26,12 +139,16 @@
     </select><br><br>
 
     <label>Products:</label><br>
-    {% for product in products %}
-        <input type="checkbox" name="pids" value="{{ product.pid }}"> {{ product.pname }} - ${{ product.pprice }}<br>
-    {% endfor %}
-    <br><br>
+{% for product in products %}
+    <span style="font-family: 'Georgia', serif; color: white; text-align: center; font-size: 20px; margin-left: 630px; margin-bottom:50px;">
+        {{ product.pname }} - ${{ product.pprice }}
+        <input type="checkbox" name="pids" value="{{ product.pid }}"> 
+    </span><br>
+{% endfor %}
+<br><br>
 
-    <input type="submit" value="Create Order">
+
+    <input type="submit" value="Create Order" class="btn">
 </form>
 </body>
 </html>
