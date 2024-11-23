@@ -279,46 +279,57 @@ def addorder():
     return render_template('addorder.html', msg=msg, products=products)
  
 
-@app.route('/editorder/<int:oid>',methods=['GET','POST'])
+@app.route('/editorder/<int:oid>', methods=['GET', 'POST'])
 def editorder(oid):
-    cursor=mysql.connection.cursor(MySQLdb.cursors.DictCursor)
-    if request.method=='POST' and 'cname' in request.form  and 'cemail' in request.form and 'odate' in request.form and 'status' in request.form and 'pids' in request.form:
-        
-        cname=request.form['cname']
-        odate=request.form['odate']
-        cemail=request.form['cemail']
+    msg = ''
+    cursor = mysql.connection.cursor(MySQLdb.cursors.DictCursor)
+
+    if request.method == 'POST' and 'cname' in request.form and 'cemail' in request.form and 'odate' in request.form and 'status' in request.form and 'pids' in request.form:
+        cname = request.form['cname']
+        odate = request.form['odate']
+        cemail = request.form['cemail']
         pids = request.form.getlist('pids')
-        status=request.form['status']
-        
-        cursor=mysql.connection.cursor(MySQLdb.cursors.DictCursor)
+        status = request.form['status']
+
         try:
-            
-            cursor = mysql.connection.cursor()
+            # Update order details
             cursor.execute('''
-                UPDATE orders SET cname=%s, cemail=%s, odate=%s, status=%s
-                            WHERE oid=%s AND id=%s''',(cname,cemail,odate,status,oid,session['id']))
+                UPDATE orders 
+                SET cname=%s, cemail=%s, odate=%s, status=%s
+                WHERE oid=%s AND id=%s
+            ''', (cname, cemail, odate, status, oid, session['id']))
             mysql.connection.commit()
 
-            
+            # Update customer order details
             for pid in pids:
                 cursor.execute('''
-                    UPDATE cust_orders SET pid=%s, p_qty=%s
-                               WHERE oid=%s AND id=%s''',(pid,1,oid,session['id']))
-                   
+                    UPDATE cust_orders 
+                    SET pid=%s, p_qty=%s
+                    WHERE oid=%s AND id=%s
+                ''', (pid, 1, oid, session['id']))
             mysql.connection.commit()
 
-            cursor.close()
-            
-            return redirect(url_for('orders'))
+            return redirect(url_for('orders'))  # Redirect to orders page
 
         except Exception as e:
-            
-            return redirect(request.url)
-    elif request.method=='POST':
-        msg='Please fill the form'
+            print(f"Error: {e}")
+            return redirect(request.url)  # Redirect back if there's an error
 
+    # Fetch the order details to display in the form
+    cursor.execute('''
+        SELECT o.oid, o.cname, o.cemail, o.odate, o.status, co.p_qty, p.pname
+        FROM orders o
+        JOIN cust_orders co ON o.oid = co.oid
+        JOIN products p ON co.pid = p.pid
+        WHERE o.oid = %s AND o.id = %s
+    ''', (oid, session['id']))
+    order = cursor.fetchone()  # Fetch the order details
 
-    return render_template('editorder.html',msg=msg)  
+    if order:
+        return render_template('editorder.html', order=order)  # Pass the order details to the template
+    else:
+        return redirect(url_for('orders'))  # Redirect if order not found
+
 
 @app.route('/deleteorder/<int:oid>',methods=['GET','POST'])
 def deleteorder(oid):
