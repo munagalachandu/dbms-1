@@ -1,14 +1,15 @@
 from flask import Flask, render_template, request, redirect, url_for,session
+
 from flask_mysqldb import MySQL
 import MySQLdb.cursors
 import re
  
 app=Flask(__name__)
 app.secret_key='key1123'
-app.config['MYSQL_HOST']='localhost'
-app.config['MYSQL_USER']='root'
-app.config['MYSQL_PASSWORD']='chandu123'
-app.config['MYSQL_DB']='stores'
+app.config['MYSQL_HOST']='munagalachandu.mysql.pythonanywhere-services.com'
+app.config['MYSQL_USER']='munagalachandu'
+app.config['MYSQL_PASSWORD']='python123'
+app.config['MYSQL_DB']='munagalachandu$stores'
 
 mysql=MySQL(app)
 
@@ -293,18 +294,18 @@ def editorder(oid):
 
         try:
             # Update order details
-            cursor.execute('''
+            cursor.execute(''' 
                 UPDATE orders 
-                SET cname=%s, cemail=%s, odate=%s, status=%s
+                SET cname=%s, cemail=%s, odate=%s, status=%s 
                 WHERE oid=%s AND id=%s
             ''', (cname, cemail, odate, status, oid, session['id']))
             mysql.connection.commit()
 
             # Update customer order details
             for pid in pids:
-                cursor.execute('''
+                cursor.execute(''' 
                     UPDATE cust_orders 
-                    SET pid=%s, p_qty=%s
+                    SET pid=%s, p_qty=%s 
                     WHERE oid=%s AND id=%s
                 ''', (pid, 1, oid, session['id']))
             mysql.connection.commit()
@@ -314,13 +315,12 @@ def editorder(oid):
         except Exception as e:
             print(f"Error: {e}")
             return redirect(request.url)  # Redirect back if there's an error
-
     # Fetch the order details to display in the form
     cursor.execute('''
-        SELECT o.oid, o.cname, o.cemail, o.odate, o.status, co.p_qty, p.pname
-        FROM orders o
-        JOIN cust_orders co ON o.oid = co.oid
-        JOIN products p ON co.pid = p.pid
+        SELECT o.oid, o.cname, o.cemail, o.odate, o.status, co.p_qty, p.pname 
+        FROM orders o 
+        JOIN cust_orders co ON o.oid = co.oid 
+        JOIN products p ON co.pid = p.pid 
         WHERE o.oid = %s AND o.id = %s
     ''', (oid, session['id']))
     order = cursor.fetchone()  # Fetch the order details
@@ -329,6 +329,7 @@ def editorder(oid):
         return render_template('editorder.html', order=order)  # Pass the order details to the template
     else:
         return redirect(url_for('orders'))  # Redirect if order not found
+
 
 
 @app.route('/deleteorder/<int:oid>',methods=['GET','POST'])
